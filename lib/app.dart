@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class App extends MaterialApp {
   App({super.key})
       : super(
-          home: ResetterPage(),
+          home: const ResetterPage(),
           title: titleText,
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
