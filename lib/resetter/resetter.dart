@@ -1,1 +1,2 @@
-export 'view/resetter_page.dart';
+export 'resetter_controller.dart';
+export 'resetter_page.dart';

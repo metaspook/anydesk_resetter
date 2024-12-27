@@ -31,6 +31,10 @@ class _ResetterPageState extends State<ResetterPage> {
     });
   }
 
+  Future<void> resetAnyDesk() async {
+    debugPrint('reset button pressed!');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,6 +54,11 @@ class _ResetterPageState extends State<ResetterPage> {
             ElevatedButton(
               onPressed: checkProcess,
               child: const Text('Check Again'),
+            ),
+            const SizedBox(height: 7.5),
+            ElevatedButton(
+              onPressed: resetAnyDesk,
+              child: const Text('Reset'),
             ),
           ],
         ),
