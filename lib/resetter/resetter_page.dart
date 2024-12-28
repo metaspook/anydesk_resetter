@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:anydesk_resetter/app.dart';
+import 'package:anydesk_resetter/resetter/resetter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ResetterPage extends StatefulWidget {
   const ResetterPage({super.key});
@@ -24,105 +27,93 @@ class _ResetterPageState extends State<ResetterPage> {
   }
 
   Future<void> checkProcess() async {
-    ProcessUtils.monitorProcess(processInfo).listen((running) {
+    ResetterController.monitorProcess(processInfo).listen((running) {
       setState(() {
         isProcessRunning = running;
       });
     });
   }
 
-  Future<void> resetAnyDesk() async {
+  void resetAnyDesk() {
     debugPrint('reset button pressed!');
+    if (!isProcessRunning) {
+      debugPrint('${processInfo.name} is not running');
+      return;
+    }
+
+    try {
+      ProcessResult forceResult;
+
+      if (Platform.isWindows) {
+        forceResult = Process.runSync(
+          'taskkill',
+          ['/F', '/FI', 'WINDOWTITLE eq ${processInfo.name}'],
+        );
+      } else if (Platform.isMacOS || Platform.isLinux) {
+        // killall command works on both MacOS and Linux
+        forceResult = Process.runSync(
+          'killall',
+          ['-9', processInfo.name],
+        );
+      } else {
+        throw PlatformException(
+          code: 'UNSUPPORTED_PLATFORM',
+          message: 'Platform not supported',
+        );
+      }
+
+      debugPrint(
+        forceResult.exitCode == 0
+            ? 'Successfully terminated ${processInfo.name}'
+            : 'Failed to terminate ${processInfo.name}: ${forceResult.stderr}',
+      );
+    } on ProcessException catch (e) {
+      debugPrint('Error terminating process: $e');
+    } on PlatformException catch (e) {
+      debugPrint('Platform error: ${e.message}');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isReset = Random().nextBool();
+    final iconRecord = isReset
+        ? (color: Colors.green, iconData: Icons.check_circle_outline_rounded)
+        : (color: Colors.red, iconData: Icons.restart_alt_rounded);
     return Scaffold(
       appBar: AppBar(
         title: const Text(App.titleText),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '${processInfo.name} is ${isProcessRunning ? 'running' : 'not running'}',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: checkProcess,
-              child: const Text('Check Again'),
-            ),
-            const SizedBox(height: 7.5),
-            ElevatedButton(
-              onPressed: resetAnyDesk,
-              child: const Text('Reset'),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            // crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                '${processInfo.name} is ${isProcessRunning ? 'running' : 'not running'}',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              // ElevatedButton(
+              //   onPressed: checkProcess,
+              //   child: const Text('Check Again'),
+              // // ),
+              // const SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: resetAnyDesk,
+                label: const Text('Reset ID/Ads'),
+                icon: Icon(
+                  iconRecord.iconData,
+                  color: iconRecord.color,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-}
-
-class ProcessInfo {
-  const ProcessInfo({
-    required this.name,
-    required this.possibleNames,
-  });
-  final String name;
-  final List<String> possibleNames;
-}
-
-class ProcessUtils {
-  static bool _checkWindowsProcess(ProcessInfo process) {
-    final success = Process.runSync(
-      'tasklist',
-      ['/FI', 'IMAGENAME eq ${process.name}.exe'],
-    ).stdout.toString().contains(process.name);
-    return success
-        ? success
-        : Process.runSync(
-            'tasklist',
-            ['/FI', 'WINDOWTITLE eq ${process.name}'],
-          ).stdout.toString().contains(process.name);
-  }
-
-  static bool _checkUnixProcess(ProcessInfo process) {
-// The `-e` flag is the POSIX standard and works consistently across
-// Unix-like systems, making it more reliable than
-// platform-specific flags like `-A` or `-ax`.
-    final result = Process.runSync('ps', ['-e']);
-    return process.possibleNames
-        .any(result.stdout.toString().toLowerCase().contains);
-  }
-
-  static bool isProcessRunning(ProcessInfo process) {
-    try {
-      if (Platform.isWindows) {
-        return _checkWindowsProcess(process);
-      } else if (Platform.isLinux || Platform.isMacOS) {
-        return _checkUnixProcess(process);
-      }
-      return false;
-    } on Exception catch (_) {
-      rethrow;
-    }
-  }
-
-  static Stream<bool> monitorProcess(
-    ProcessInfo process, {
-    Duration interval = const Duration(seconds: 1),
-  }) =>
-      Stream.periodic(interval, (_) {
-        try {
-          final isRunning = isProcessRunning(process);
-          return isRunning;
-        } on Exception catch (e) {
-          debugPrint('Error monitoring process ${process.name}: $e');
-          return false;
-        }
-      });
 }
