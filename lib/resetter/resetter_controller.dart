@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -51,6 +52,33 @@ class ResetterController extends ChangeNotifier {
           return false;
         }
       });
+
+//   static Stream<bool> monitorProcess2(
+//     ProcessInfo process, {
+//     Duration interval = const Duration(seconds: 1),
+//   }) {
+//     final timer = Timer.periodic(interval, (_){
+//       _.
+//  try {
+//         final isRunning = isProcessRunning(process);
+//         yield isRunning;
+//       } on Exception catch (e) {
+//         debugPrint('Error monitoring process ${process.name}: $e');
+//         return false;
+//       }
+//     });
+//     timer.
+
+//     return Stream.periodic(interval, (_) {
+//       try {
+//         final isRunning = isProcessRunning(process);
+//         return isRunning;
+//       } on Exception catch (e) {
+//         debugPrint('Error monitoring process ${process.name}: $e');
+//         return false;
+//       }
+//     });
+//   }
 }
 
 class ProcessInfo {

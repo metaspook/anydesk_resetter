@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class App extends MaterialApp {
   App({super.key})
       : super(
+          debugShowCheckedModeBanner: false,
           home: const ResetterPage(),
           title: titleText,
           theme: ThemeData(
@@ -13,4 +14,5 @@ class App extends MaterialApp {
         );
 
   static const titleText = 'AnyDesk Resetter';
+  static const name = 'AnyDesk';
 }

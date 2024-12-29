@@ -80,39 +80,81 @@ class _ResetterPageState extends State<ResetterPage> {
     final iconRecord = isReset
         ? (color: Colors.green, iconData: Icons.check_circle_outline_rounded)
         : (color: Colors.red, iconData: Icons.restart_alt_rounded);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(App.titleText),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            // crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                '${processInfo.name} is ${isProcessRunning ? 'running' : 'not running'}',
-                style: Theme.of(context).textTheme.titleLarge,
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.red.withValues(alpha: 10),
+                  Colors.white.withValues(alpha: 90),
+                ],
               ),
-              const SizedBox(height: 16),
-              // ElevatedButton(
-              //   onPressed: checkProcess,
-              //   child: const Text('Check Again'),
-              // // ),
-              // const SizedBox(height: 10),
-              ElevatedButton.icon(
-                onPressed: resetAnyDesk,
-                label: const Text('Reset ID/Ads'),
-                icon: Icon(
-                  iconRecord.iconData,
-                  color: iconRecord.color,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 5,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Resets ID/Ads',
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                        Text(
+                          'Developed by, Metaspook',
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Text(
+                  '${processInfo.name}: ${isProcessRunning ? 'running' : 'not running'}',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                // const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: resetAnyDesk,
+                  label: const Text('Reset ID/Ads'),
+                  icon: Icon(
+                    iconRecord.iconData,
+                    color: iconRecord.color,
+                  ),
+                ),
+                // const Spacer(),
+                Column(
+                  children: [
+                    Text(
+                      'NOTE: This app is NOT encourages any kind of illegal '
+                      'user of ${App.name} rather educational or experimental '
+                      'perpose only.',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                    const SizedBox(height: 7.5),
+                    Text(
+                      'Copyright (c) 2024 Metaspook',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

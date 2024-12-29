@@ -5,18 +5,17 @@ import 'package:window_manager/window_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
-  const minimumSize = Size(400, 300);
-  final windowOptions = WindowOptions(
-    size: minimumSize * 1.125,
-    minimumSize: minimumSize,
-    center: true,
+  const windowOptions = WindowOptions(
+    size: Size(400, 237.5),
+    backgroundColor: Colors.transparent,
     title: 'AnyDesk Resetter',
+    center: true,
   );
-
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.setMaximizable(false);
+    await windowManager.setResizable(false);
     await windowManager.show();
     await windowManager.focus();
   });
-
   runApp(App());
 }
