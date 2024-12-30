@@ -5,6 +5,7 @@ import 'package:anydesk_resetter/app.dart';
 import 'package:anydesk_resetter/resetter/resetter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ResetterPage extends StatefulWidget {
   const ResetterPage({super.key});
@@ -83,78 +84,110 @@ class _ResetterPageState extends State<ResetterPage> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.red.withValues(alpha: 10),
-                  Colors.white.withValues(alpha: 90),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.black.withValues(alpha: 75),
+              Colors.grey.withValues(alpha: 25),
+              Colors.white.withValues(alpha: 25),
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Resets ID/Ads',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: Colors.cyanAccent,
+                            ),
+                      ),
+                      Text(
+                        'Developed by, Metaspook',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: Colors.cyanAccent,
+                            ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 5,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Text(
+                '${processInfo.name}: ${isProcessRunning ? 'running' : 'not running'}',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
+              // const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: resetAnyDesk,
+                label: const Text(
+                  'Reset ID/Ads',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                icon: Icon(
+                  iconRecord.iconData,
+                  color: iconRecord.color,
+                ),
+                style: ElevatedButton.styleFrom(
+                  // textStyle: const TextStyle(
+                  //   color: Colors.cyanAccent,
+                  // ),
+                  backgroundColor: Colors.white.withValues(alpha: 75),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 25,
+                    vertical: 15,
+                  ),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: .75),
+              Column(
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      text: 'NOTE: ',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                       children: [
-                        Text(
-                          'Resets ID/Ads',
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                        Text(
-                          'Developed by, Metaspook',
-                          style: Theme.of(context).textTheme.labelSmall,
+                        TextSpan(
+                          text:
+                              'This app is NOT encourages any kind of illegal usages of ${App.name}, rather educational or experimental perpose only.',
+                          style: Theme.of(context).textTheme.labelMedium,
                         ),
                       ],
                     ),
-                  ],
-                ),
-                Text(
-                  '${processInfo.name}: ${isProcessRunning ? 'running' : 'not running'}',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                // const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: resetAnyDesk,
-                  label: const Text('Reset ID/Ads'),
-                  icon: Icon(
-                    iconRecord.iconData,
-                    color: iconRecord.color,
+                    // textAlign: TextAlign.center,
+                    style: GoogleFonts.kodeMono(),
                   ),
-                ),
-                // const Spacer(),
-                Column(
-                  children: [
-                    Text(
-                      'NOTE: This app is NOT encourages any kind of illegal '
-                      'user of ${App.name} rather educational or experimental '
-                      'perpose only.',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
-                    const SizedBox(height: 7.5),
-                    Text(
-                      'Copyright (c) 2024 Metaspook',
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Copyright (c) 2024 Metaspook',
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
