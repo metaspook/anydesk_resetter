@@ -15,12 +15,6 @@ class ResetterPage extends StatefulWidget {
 }
 
 class _ResetterPageState extends State<ResetterPage> {
-  bool isProcessRunning = false;
-  final processInfo = const ProcessInfo(
-    name: 'AnyDesk',
-    possibleNames: ['anydesk', 'AnyDesk*'],
-  );
-
   @override
   void initState() {
     super.initState();
@@ -33,46 +27,6 @@ class _ResetterPageState extends State<ResetterPage> {
         isProcessRunning = running;
       });
     });
-  }
-
-  void resetAnyDesk() {
-    debugPrint('reset button pressed!');
-    if (!isProcessRunning) {
-      debugPrint('${processInfo.name} is not running');
-      return;
-    }
-
-    try {
-      ProcessResult forceResult;
-
-      if (Platform.isWindows) {
-        forceResult = Process.runSync(
-          'taskkill',
-          ['/F', '/FI', 'WINDOWTITLE eq ${processInfo.name}'],
-        );
-      } else if (Platform.isMacOS || Platform.isLinux) {
-        // killall command works on both MacOS and Linux
-        forceResult = Process.runSync(
-          'killall',
-          ['-9', processInfo.name],
-        );
-      } else {
-        throw PlatformException(
-          code: 'UNSUPPORTED_PLATFORM',
-          message: 'Platform not supported',
-        );
-      }
-
-      debugPrint(
-        forceResult.exitCode == 0
-            ? 'Successfully terminated ${processInfo.name}'
-            : 'Failed to terminate ${processInfo.name}: ${forceResult.stderr}',
-      );
-    } on ProcessException catch (e) {
-      debugPrint('Error terminating process: $e');
-    } on PlatformException catch (e) {
-      debugPrint('Platform error: ${e.message}');
-    }
   }
 
   @override
@@ -129,32 +83,26 @@ class _ResetterPageState extends State<ResetterPage> {
                       color: Colors.white,
                     ),
               ),
-              // const SizedBox(height: 16),
+              // Reset Button
               ElevatedButton.icon(
                 onPressed: resetAnyDesk,
                 label: const Text(
-                  'Reset ID/Ads',
+                  'Reset',
+                  textScaler: TextScaler.linear(1.75),
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 icon: Icon(
+                  size: 27.5,
                   iconRecord.iconData,
                   color: iconRecord.color,
+                  applyTextScaling: true,
                 ),
                 style: ElevatedButton.styleFrom(
-                  // textStyle: const TextStyle(
-                  //   color: Colors.cyanAccent,
-                  // ),
-                  backgroundColor: Colors.white.withValues(alpha: 75),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 25,
-                    vertical: 15,
+                    horizontal: 15,
+                    vertical: 10.75,
                   ),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10),
-                    ),
-                  ),
+                  backgroundColor: Colors.white.withValues(alpha: 75),
                 ),
               ),
               const SizedBox(height: .75),
