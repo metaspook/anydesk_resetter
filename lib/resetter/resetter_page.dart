@@ -3,34 +3,17 @@ import 'dart:math';
 
 import 'package:anydesk_resetter/app.dart';
 import 'package:anydesk_resetter/resetter/resetter.dart';
+import 'package:anydesk_resetter/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
-class ResetterPage extends StatefulWidget {
+class ResetterPage extends StatelessWidget {
   const ResetterPage({super.key});
 
   @override
-  State<ResetterPage> createState() => _ResetterPageState();
-}
-
-class _ResetterPageState extends State<ResetterPage> {
-  @override
-  void initState() {
-    super.initState();
-    checkProcess();
-  }
-
-  Future<void> checkProcess() async {
-    ResetterController.monitorProcess(processInfo).listen((running) {
-      setState(() {
-        isProcessRunning = running;
-      });
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final controller = context.read<ResetterController>;
     final isReset = Random().nextBool();
     final iconRecord = isReset
         ? (color: Colors.green, iconData: Icons.check_circle_outline_rounded)
@@ -77,15 +60,31 @@ class _ResetterPageState extends State<ResetterPage> {
                   ),
                 ],
               ),
-              Text(
-                '${processInfo.name}: ${isProcessRunning ? 'running' : 'not running'}',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
-                    ),
+              // AnyDesk status text
+              Selector<ResetterController, bool>(
+                selector: (_, state) => state.isProcessRunning,
+                builder: (_, isProcessRunning, __) => Text(
+                  '${controller().processName}: ${isProcessRunning ? 'running' : 'not running'}',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: Colors.white,
+                      ),
+                ),
               ),
               // Reset Button
               ElevatedButton.icon(
-                onPressed: resetAnyDesk,
+                onPressed: () {
+                  // Process.runSync(executable, arguments)
+                  const name = 'AnyDesk';
+                  final taskRecord = getTaskRecord(name);
+                  // debugPrint('selfName: $selfName');
+                  final result = Process.runSync(
+                    taskRecord.executable,
+                    taskRecord.arguments,
+                    runInShell: true,
+                  );
+                  debugPrint('stdout: ${result.stdout}');
+                  debugPrint('stderr: ${result.stderr}');
+                },
                 label: const Text(
                   'Reset',
                   textScaler: TextScaler.linear(1.75),

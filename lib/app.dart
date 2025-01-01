@@ -1,19 +1,26 @@
+import 'package:anydesk_resetter/repositories/process_repo.dart';
 import 'package:anydesk_resetter/resetter/resetter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 
 class App extends MaterialApp {
   App({super.key})
       : super(
           debugShowCheckedModeBanner: false,
-          home: ChangeNotifierProvider(
-            create: (context) => ResetterController(
-              const ProcessInfo(
-                name: 'AnyDesk',
-                possibleNames: ['anydesk', 'AnyDesk*'],
+          home: MultiProvider(
+            providers: [
+              Provider<ProcessRepo>(
+                create: (_) => ProcessRepo(),
               ),
-            ),
+              ChangeNotifierProvider<ResetterController>(
+                create: (context) => ResetterController(
+                  processName: 'AnyDesk',
+                  processRepo: context.read<ProcessRepo>(),
+                ),
+              ),
+            ],
             child: const ResetterPage(),
           ),
           title: titleText,

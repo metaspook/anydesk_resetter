@@ -1,0 +1,44 @@
+import 'dart:io';
+
+import 'package:anydesk_resetter/models/models.dart';
+import 'package:anydesk_resetter/utils/utils.dart';
+import 'package:flutter/services.dart';
+
+/// Returns platform-specific command and arguments for process lookup.
+/// * Windows: Uses tasklist with findstr.
+/// * Unix/Mac: Uses ps with grep.
+/// * Throws [PlatformException] for unsupported platforms.
+TaskRecord getTaskRecord(String name) => switch (Platform.operatingSystem) {
+      Platforms.windows => (
+          executable: 'tasklist',
+          arguments: [
+            '/NH',
+            '/FI',
+            'IMAGENAME eq $name*',
+            '|',
+            'findstr',
+            '/V',
+            '/I',
+            Platform.executable,
+          ],
+        ),
+      // i. flag `-e` is the POSIX alternative of `-A` or `-ax`.
+      Platforms.macos || Platforms.linux => (
+          executable: 'ps',
+          arguments: [
+            '-e',
+            '|',
+            'grep',
+            '-i',
+            name,
+            '|',
+            'grep',
+            '-v',
+            Platform.executable,
+          ],
+        ),
+      _ => throw PlatformException(
+          code: ErrorCodes.unsupportedPlatform,
+          message: 'Platform: ${Platform.operatingSystem} is not supported!',
+        ),
+    };
