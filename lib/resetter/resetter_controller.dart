@@ -9,19 +9,30 @@ class ResetterController extends ChangeNotifier {
     required ProcessRepo processRepo,
   }) : _processRepo = processRepo {
     _processRunningSubscription =
-        _processRepo.monitorProcess(processName).listen(_setProcessRunning);
+        _processRepo.monitorProcess(processName).listen(_changeProcessRunning);
   }
 
   final ProcessRepo _processRepo;
   StreamSubscription<bool>? _processRunningSubscription;
   final String processName;
-  // State of isProcessRunning
+  //-- Initial State
   bool _isProcessRunning = false;
+  double _turns = 5;
+
+  //-- Current State getters
   bool get isProcessRunning => _isProcessRunning;
+  double get turns => _turns;
+
+  //-- Updated State setters
+  void incrementsTurns() {
+    print('object: $_turns');
+    _turns = 5;
+    notifyListeners();
+  }
 
   //-- Private helpers
   // ignore: avoid_positional_boolean_parameters
-  void _setProcessRunning(bool value) {
+  void _changeProcessRunning(bool value) {
     _isProcessRunning = value;
     notifyListeners();
   }

@@ -6,10 +6,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   const windowOptions = WindowOptions(
-    size: Size(400, 237.5),
+    size: Size(400, 250),
     backgroundColor: Colors.transparent,
     title: 'AnyDesk Resetter',
     center: true,
+    alwaysOnTop: true,
   );
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.setMaximizable(false);

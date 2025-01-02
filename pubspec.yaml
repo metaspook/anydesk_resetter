@@ -23,6 +23,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    - assets/anydesk_logo_1.png
 
 build_options:
   aot:
