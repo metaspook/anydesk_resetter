@@ -11,9 +11,7 @@ class App extends MaterialApp {
           debugShowCheckedModeBanner: false,
           home: MultiProvider(
             providers: [
-              Provider<ProcessRepo>(
-                create: (_) => ProcessRepo(),
-              ),
+              Provider<ProcessRepo>(create: (_) => ProcessRepo()),
               ChangeNotifierProvider<ResetterController>(
                 create: (context) => ResetterController(
                   processName: 'AnyDesk',
@@ -26,11 +24,12 @@ class App extends MaterialApp {
           title: titleText,
           theme: ThemeData(
             textTheme: GoogleFonts.kodeMonoTextTheme(),
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
         );
 
   static const titleText = 'AnyDesk Resetter';
   static const name = 'AnyDesk';
+  static const assetAnyDeskLogo = 'assets/anydesk_logo_1.png';
 }
