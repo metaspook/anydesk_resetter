@@ -10,15 +10,15 @@ class ProcessRepo {
   }) =>
       Stream.periodic(interval, (_) {
         try {
-          return isProcessRunning(name);
+          return processRunningTaskStdOut(name).contains(name);
         } on Exception catch (e, s) {
           dev.log('Error monitoring process: $name', error: e, stackTrace: s);
           return false;
         }
       });
 
-  bool isProcessRunning(String name) {
-    final taskRecord = getTaskRecord(name);
+  String processRunningTaskStdOut(String name) {
+    final taskRecord = existenceTaskRecord(name);
     final result = Process.runSync(
       taskRecord.executable,
       taskRecord.arguments,
@@ -34,7 +34,30 @@ class ProcessRepo {
         result.exitCode,
       );
     }
-    return stdout.contains(name);
+    return stdout;
+  }
+
+  bool killProcess(String name) {
+    final stdOut = processRunningTaskStdOut(name);
+    print('stdOut: $stdOut');
+    // return stdOut;
+    final taskRecord = terminationTaskRecord(name);
+    final result = Process.runSync(
+      taskRecord.executable,
+      taskRecord.arguments,
+      runInShell: true,
+    );
+    final (stdout, stderr) =
+        (result.stdout.toString(), result.stderr.toString());
+    if (stderr.isNotEmpty) {
+      throw ProcessException(
+        taskRecord.executable,
+        taskRecord.arguments,
+        stderr,
+        result.exitCode,
+      );
+    }
+    return true;
   }
 
   // void resetAnyDesk() {

@@ -8,7 +8,8 @@ import 'package:flutter/services.dart';
 /// * Windows: Uses tasklist with findstr.
 /// * Unix/Mac: Uses ps with grep.
 /// * Throws [PlatformException] for unsupported platforms.
-TaskRecord getTaskRecord(String name) => switch (Platform.operatingSystem) {
+TaskRecord existenceTaskRecord(String name) =>
+    switch (Platform.operatingSystem) {
       Platforms.windows => (
           executable: 'tasklist',
           arguments: [
@@ -35,6 +36,34 @@ TaskRecord getTaskRecord(String name) => switch (Platform.operatingSystem) {
             'grep',
             '-v',
             Platform.executable,
+          ],
+        ),
+      _ => throw PlatformException(
+          code: ErrorCodes.unsupportedPlatform,
+          message: 'Platform: ${Platform.operatingSystem} is not supported!',
+        ),
+    };
+
+TaskRecord terminationTaskRecord(String name) =>
+    switch (Platform.operatingSystem) {
+      Platforms.windows => (
+          executable: 'taskkill',
+          arguments: [
+            '/F',
+            '/FI',
+            'IMAGENAME ne ${Platform.executable}',
+            '/IM',
+            '$name*',
+          ],
+        ),
+      // i. flag `-e` is the POSIX alternative of `-A` Platform.executablePlatform.executableor `-ax`.
+      Platforms.macos || Platforms.linux => (
+          executable: 'pkill',
+          arguments: [
+            '-9', // Force kill
+            '-f', // Full command line
+            '-i', // Case insensitive
+            '^(?!.*${Platform.executable}).*$name.*\$', // Regex pattern
           ],
         ),
       _ => throw PlatformException(

@@ -30,6 +30,10 @@ class ResetterController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void terminateProcess() {
+    _processRepo.killProcess(processName);
+  }
+
   //-- Private helpers
   // ignore: avoid_positional_boolean_parameters
   void _changeProcessRunning(bool value) {

@@ -137,17 +137,7 @@ class ResetterPage extends StatelessWidget {
                       // Reset Button
                       ElevatedButton.icon(
                         onPressed: () {
-                          // Process.runSync(executable, arguments)
-                          const name = 'AnyDesk';
-                          final taskRecord = getTaskRecord(name);
-                          // debugPrint('selfName: $selfName');
-                          final result = Process.runSync(
-                            taskRecord.executable,
-                            taskRecord.arguments,
-                            runInShell: true,
-                          );
-                          debugPrint('stdout: ${result.stdout}');
-                          debugPrint('stderr: ${result.stderr}');
+                          controller().terminateProcess();
                         },
                         label: const Text(
                           'Reset',
