@@ -138,6 +138,7 @@ class ResetterPage extends StatelessWidget {
                       ElevatedButton.icon(
                         onPressed: () {
                           controller().terminateProcess();
+                          controller().resetAnyDeskData();
                         },
                         label: const Text(
                           'Reset',

@@ -28,3 +28,7 @@ extension PlatformExt on Platform {
     return fullVersion;
   }
 }
+
+extension StringIterableExt on Iterable<String> {
+  String joinAsPath() => join(Platform.pathSeparator);
+}
