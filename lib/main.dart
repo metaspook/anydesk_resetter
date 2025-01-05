@@ -6,7 +6,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   const windowOptions = WindowOptions(
-    size: Size(400, 225),
+    size: Size(500, 237.5),
     backgroundColor: Colors.transparent,
     title: 'AnyDesk Resetter',
     center: true,

@@ -128,38 +128,67 @@ class ResetterPage extends StatelessWidget {
                     ],
                   ),
                   Column(
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     // mainAxisSize: MainAxisSize.min,
                     spacing: 2.5,
                     children: [
                       Image.asset(App.assetAnyDeskLogo, scale: 2.25),
-                      const SizedBox(height: 10),
+                      // const SizedBox(height: 10),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Selector<ResetterController, bool>(
+                            selector: (_, state) =>
+                                state.keepFavoritesAndRecentSessions,
+                            builder: (_, keepFavoritesAndRecentSessions, __) {
+                              return Checkbox(
+                                value: keepFavoritesAndRecentSessions,
+                                onChanged: (_) => controller()
+                                    .changeKeepFavoritesAndRecentSessions(),
+                              );
+                            },
+                          ),
+                          Text(
+                            'Keep Favorites & Recent Sessions',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  color: Colors.white,
+                                ),
+                          ),
+                        ],
+                      ),
                       // Reset Button
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          controller().terminateProcess();
-                          controller().resetAnyDeskData();
-                        },
-                        label: const Text(
-                          'Reset',
-                          textScaler: TextScaler.linear(1.75),
-                          style: TextStyle(
-                            color: Colors.cyanAccent,
-                            fontWeight: FontWeight.bold,
+                      SizedBox(
+                        width: 265,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            controller().terminateProcess();
+                            controller().resetAnyDeskData();
+                          },
+                          label: const Text(
+                            'Reset',
+                            textScaler: TextScaler.linear(1.75),
+                            style: TextStyle(
+                              color: Colors.cyanAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        icon: Icon(
-                          size: 27.5,
-                          resetIconRecord.iconData,
-                          color: resetIconRecord.color,
-                          applyTextScaling: true,
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 10.75,
+                          icon: Icon(
+                            size: 27.5,
+                            resetIconRecord.iconData,
+                            color: resetIconRecord.color,
+                            applyTextScaling: true,
                           ),
-                          backgroundColor: Colors.black.withValues(alpha: 150),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 10.75,
+                            ),
+                            backgroundColor:
+                                Colors.black.withValues(alpha: 150),
+                          ),
                         ),
                       ),
                     ],

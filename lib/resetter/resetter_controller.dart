@@ -21,12 +21,19 @@ class ResetterController extends ChangeNotifier {
   //-- Initial State
   bool _isProcessRunning = false;
   double _turns = 5;
+  bool _keepFavoritesAndRecentSessions = true;
 
   //-- Current State getters
   bool get isProcessRunning => _isProcessRunning;
   double get turns => _turns;
+  bool get keepFavoritesAndRecentSessions => _keepFavoritesAndRecentSessions;
 
   //-- Updated State setters
+  void changeKeepFavoritesAndRecentSessions() {
+    _keepFavoritesAndRecentSessions = !_keepFavoritesAndRecentSessions;
+    notifyListeners();
+  }
+
   void incrementsTurns() {
     print('object: $_turns');
     _turns = 5;
