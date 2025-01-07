@@ -1,8 +1,11 @@
+import 'dart:async';
+import 'dart:developer' as dev;
 import 'dart:io';
 
-import 'package:anydesk_resetter/models/models.dart';
+import 'package:anydesk_resetter/shared/models/models.dart';
 import 'package:anydesk_resetter/utils/utils.dart';
 import 'package:flutter/services.dart';
+import 'package:logging/logging.dart';
 
 /// Returns platform-specific command and arguments for process lookup.
 /// * Windows: Uses tasklist with findstr.
@@ -71,3 +74,42 @@ TaskRecord terminationTaskRecord(String name) =>
           message: 'Platform: ${Platform.operatingSystem} is not supported!',
         ),
     };
+
+void devLog(
+  String message, {
+  DateTime? time,
+  int? sequenceNumber,
+  int level = 0,
+  String name = '',
+  Zone? zone,
+  Object? error,
+  StackTrace? stackTrace,
+}) {
+  if (debugMode) {
+    dev.log(
+      message,
+      time: time,
+      sequenceNumber: sequenceNumber,
+      level: level,
+      name: name,
+      zone: zone,
+      error: error,
+      stackTrace: stackTrace,
+    );
+  }
+}
+
+void devLog2(LogRecord record) {
+  if (debugMode) {
+    dev.log(
+      record.message,
+      time: record.time,
+      sequenceNumber: record.sequenceNumber,
+      level: record.level.value,
+      name: record.loggerName,
+      zone: record.zone,
+      error: record.error,
+      stackTrace: record.stackTrace,
+    );
+  }
+}

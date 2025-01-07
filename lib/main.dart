@@ -1,5 +1,7 @@
 import 'package:anydesk_resetter/app.dart';
+import 'package:anydesk_resetter/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
@@ -18,5 +20,7 @@ void main() async {
     await windowManager.show();
     await windowManager.focus();
   });
+  Logger.root.level = Level.ALL; // defaults to Level.INFO
+  Logger.root.onRecord.listen(devLog2);
   runApp(App());
 }
