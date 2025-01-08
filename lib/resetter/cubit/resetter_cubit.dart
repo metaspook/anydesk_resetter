@@ -14,40 +14,57 @@ class ResetterCubit extends Cubit<ResetterState> {
         super(const ResetterState()) {
     //-- Subscribe to monitorProcess stream.
     _processRunningSubscription = _processRepo
-        .monitorProcess(App.processName)
-        .listen(_changeProcessRunning);
+        .monitorProcess(name: App.processName)
+        .listen(_changeAnyDeskOnline);
+    //-- Subscribe to monitorData stream.
+    _monitorDataSubscription =
+        _processRepo.monitorData().listen(_changeDataExists);
   }
 
   final ProcessRepo _processRepo;
+  StreamSubscription<bool>? _monitorDataSubscription;
   StreamSubscription<bool>? _processRunningSubscription;
 
   //-- Cubit Methods
-  void changeKeepFavoritesAndRecentSessions() {
+  Future<void> changeKeepFavoritesAndRecentSessions() async {
+    final prevStatus = state.status;
+    emit(state.copyWith(status: ResetterStatus.loading));
+    await Future<void>.delayed(const Duration(seconds: 1));
+    await _monitorDataSubscription?.cancel();
+    _monitorDataSubscription = _processRepo
+        .monitorData(keepData: !state.keepFavoritesAndRecentSessions)
+        .listen(_changeDataExists);
     emit(
       state.copyWith(
+        status: prevStatus,
         keepFavoritesAndRecentSessions: !state.keepFavoritesAndRecentSessions,
       ),
     );
   }
 
   Future<void> resetAnyDesk({bool keepData = true}) async {
-    emit(state.copyWith(status: ResetterStatus.loading));
+    emit(state.copyWith(status: ResetterStatus.loading, isResetting: true));
     final success = await _processRepo.reset(keepData: keepData);
     emit(
       success
-          ? state.copyWith(status: ResetterStatus.success)
-          : state.copyWith(status: ResetterStatus.failure),
+          ? state.copyWith(status: ResetterStatus.success, isResetting: false)
+          : state.copyWith(status: ResetterStatus.failure, isResetting: false),
     );
   }
 
   //-- Private helpers
-  void _changeProcessRunning(bool value) {
+  void _changeAnyDeskOnline(bool value) {
     emit(state.copyWith(anyDeskOnline: value));
+  }
+
+  void _changeDataExists(bool value) {
+    emit(state.copyWith(dataExists: value));
   }
 
   @override
   Future<void> close() {
     _processRunningSubscription?.cancel();
+    _monitorDataSubscription?.cancel();
     return super.close();
   }
 }

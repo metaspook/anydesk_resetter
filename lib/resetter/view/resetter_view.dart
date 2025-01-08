@@ -138,9 +138,18 @@ class ResetterView extends StatelessWidget {
                       // Reset Button
                       SizedBox(
                         width: 260,
-                        child: BlocSelector<ResetterCubit, ResetterState, bool>(
-                          selector: (state) => state.status.isLoading,
-                          builder: (context, isLoading) {
+                        child: Builder(
+                          builder: (context) {
+                            final dataExists = context.select(
+                              (ResetterCubit cubit) => cubit.state.dataExists,
+                            );
+                            final isLoading = context.select(
+                              (ResetterCubit cubit) =>
+                                  cubit.state.status.isLoading,
+                            );
+                            final isResetting = context.select(
+                              (ResetterCubit cubit) => cubit.state.isResetting,
+                            );
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
@@ -157,11 +166,11 @@ class ResetterView extends StatelessWidget {
                                         keepFavoritesAndRecentSessions,
                                       ) {
                                         return Checkbox(
-                                          tristate: isLoading,
-                                          value: isLoading
+                                          tristate: isResetting,
+                                          value: isResetting
                                               ? null
                                               : keepFavoritesAndRecentSessions,
-                                          onChanged: isLoading
+                                          onChanged: isResetting
                                               ? null
                                               : (_) => cubit()
                                                   .changeKeepFavoritesAndRecentSessions(),
@@ -169,15 +178,13 @@ class ResetterView extends StatelessWidget {
                                       },
                                     ),
                                     Text(
-                                      isLoading
+                                      isResetting
                                           ? 'Wait! data resetting on progress'
                                           : 'Keep Favorites & Recent Sessions',
                                       style: Theme.of(context)
                                           .textTheme
                                           .labelSmall
-                                          ?.copyWith(
-                                            color: Colors.white,
-                                          ),
+                                          ?.copyWith(color: Colors.white),
                                     ),
                                   ],
                                 ),
@@ -185,16 +192,28 @@ class ResetterView extends StatelessWidget {
                                   ElevatedButton(
                                     onPressed: null,
                                     style: ElevatedButton.styleFrom(
-                                      // padding: const EdgeInsets.symmetric(
-                                      //   horizontal: 15,
-                                      //   vertical: 10.75,
-                                      // ),
                                       backgroundColor:
                                           Colors.black.withValues(alpha: 150),
                                     ),
                                     child: LinearProgressIndicator(
-                                      // minHeight: 25,
                                       borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  )
+                                else if (!dataExists)
+                                  ElevatedButton(
+                                    onPressed: null,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.black.withValues(alpha: 150),
+                                    ),
+                                    child: Text(
+                                      'No data found to reset!',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(
+                                            color: Colors.white,
+                                          ),
                                     ),
                                   )
                                 else
@@ -215,10 +234,6 @@ class ResetterView extends StatelessWidget {
                                       color: resetIconRecord.color,
                                     ),
                                     style: ElevatedButton.styleFrom(
-                                      // padding: const EdgeInsets.symmetric(
-                                      //   horizontal: 15,
-                                      //   vertical: 10.75,
-                                      // ),
                                       backgroundColor:
                                           Colors.black.withValues(alpha: 150),
                                     ),

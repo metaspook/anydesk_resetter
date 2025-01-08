@@ -9,8 +9,8 @@ class ProcessRepo {
   final String processName;
   final Logger logger;
 
-  Stream<bool> monitorProcess(
-    String name, {
+  Stream<bool> monitorProcess({
+    required String name,
     Duration interval = const Duration(seconds: 1),
   }) =>
       Stream.periodic(interval, (_) {
@@ -18,6 +18,19 @@ class ProcessRepo {
           return processRunningTaskStdOut(name).contains(name);
         } on Exception catch (e, s) {
           logger.severe('Error monitoring process: $name', e, s);
+          return false;
+        }
+      });
+
+  Stream<bool> monitorData({
+    bool keepData = true,
+    Duration interval = const Duration(seconds: 1),
+  }) =>
+      Stream.periodic(interval, (_) {
+        try {
+          return dataExists(keepData: keepData);
+        } on Exception catch (e, s) {
+          logger.severe('Error monitoring data!', e, s);
           return false;
         }
       });
@@ -65,7 +78,58 @@ class ProcessRepo {
     return true;
   }
 
+  bool dataExists({bool keepData = true}) {
+    // path list parser
+    List<String> parsePaths(List<List<String>> pathsList) => [
+          for (final e in pathsList)
+            if (keepData) ...[
+              [...e, 'service.conf'].joinAsPath(),
+              [...e, 'system.conf'].joinAsPath(),
+            ] else
+              e.joinAsPath(),
+        ];
+    // path list preparation
+    final paths = switch (Platform.operatingSystem) {
+      Platforms.windows => parsePaths(
+          [
+            ['${Platform.environment['APPDATA']}', 'AnyDesk'],
+            ['${Platform.environment['PROGRAMDATA']}', 'AnyDesk'],
+          ],
+        ),
+      Platforms.linux => parsePaths(
+          [
+            ['etc', 'anydesk'],
+            ['${Platform.environment['HOME']}', '.anydesk'],
+          ],
+        ),
+      Platforms.macos => parsePaths(
+          [
+            ['Library', 'Application Support', 'AnyDesk'],
+            [
+              '${Platform.environment['HOME']}',
+              'Library',
+              'Application Support',
+              'AnyDesk',
+            ]
+          ],
+        ),
+      _ => throw PlatformException(
+          code: ErrorCodes.unsupportedPlatform,
+          message: '${Platform.operatingSystem} not supported',
+        ),
+    };
+
+    // find operation
+    try {
+      return paths.map((path) => Directory(path).existsSync()).contains(true);
+    } on Exception catch (e) {
+      logger.severe('Error finding AnyDesk data: $e');
+    }
+    return false;
+  }
+
   Future<bool> reset({bool keepData = true}) async {
+    await Future<void>.delayed(const Duration(seconds: 1));
     killProcess();
     // path list parser
     List<String> parsePaths(List<List<String>> pathsList) => [
