@@ -6,7 +6,6 @@ import 'package:anydesk_resetter/resetter/resetter.dart';
 import 'package:anydesk_resetter/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 String parseOsVersion(String fullVersion) {
   if (Platform.isWindows) {
@@ -43,14 +42,17 @@ class ResetterView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
+        // color: Colors.black.withValues(alpha: 75),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.black.withValues(alpha: 125),
+              Colors.black.withValues(alpha: 75),
               Colors.grey.withValues(alpha: 25),
               Colors.white,
+              // Colors.white,
+              // Colors.black,
             ],
           ),
         ),
@@ -129,118 +131,18 @@ class ResetterView extends StatelessWidget {
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
-                    // mainAxisSize: MainAxisSize.min,
                     spacing: 2.5,
                     children: [
                       Image.asset(App.assetAnyDeskLogo, scale: 2.25),
-                      // const SizedBox(height: 10),
-
                       // Reset Button
-                      SizedBox(
+                      const SizedBox(
                         width: 260,
-                        child: Builder(
-                          builder: (context) {
-                            final dataExists = context.select(
-                              (ResetterCubit cubit) => cubit.state.dataExists,
-                            );
-                            final isLoading = context.select(
-                              (ResetterCubit cubit) =>
-                                  cubit.state.status.isLoading,
-                            );
-                            final isResetting = context.select(
-                              (ResetterCubit cubit) => cubit.state.isResetting,
-                            );
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    // Checkbox KeepFavoritesAndRecentSessions
-                                    BlocSelector<ResetterCubit, ResetterState,
-                                        bool>(
-                                      selector: (state) =>
-                                          state.keepFavoritesAndRecentSessions,
-                                      builder: (
-                                        context,
-                                        keepFavoritesAndRecentSessions,
-                                      ) {
-                                        return Checkbox(
-                                          tristate: isResetting,
-                                          value: isResetting
-                                              ? null
-                                              : keepFavoritesAndRecentSessions,
-                                          onChanged: isResetting
-                                              ? null
-                                              : (_) => cubit()
-                                                  .changeKeepFavoritesAndRecentSessions(),
-                                        );
-                                      },
-                                    ),
-                                    Text(
-                                      isResetting
-                                          ? 'Wait! data resetting on progress'
-                                          : 'Keep Favorites & Recent Sessions',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall
-                                          ?.copyWith(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                                if (isLoading)
-                                  ElevatedButton(
-                                    onPressed: null,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Colors.black.withValues(alpha: 150),
-                                    ),
-                                    child: LinearProgressIndicator(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  )
-                                else if (!dataExists)
-                                  ElevatedButton(
-                                    onPressed: null,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Colors.black.withValues(alpha: 150),
-                                    ),
-                                    child: Text(
-                                      'No data found to reset!',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall
-                                          ?.copyWith(
-                                            color: Colors.white,
-                                          ),
-                                    ),
-                                  )
-                                else
-                                  ElevatedButton.icon(
-                                    onPressed: cubit().resetAnyDesk,
-                                    label: const Text(
-                                      'Reset',
-                                      // until 1.6 maintains original size
-                                      textScaler: TextScaler.linear(1.6),
-                                      style: TextStyle(
-                                        color: Colors.cyanAccent,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    icon: Icon(
-                                      size: 27.5,
-                                      resetIconRecord.iconData,
-                                      color: resetIconRecord.color,
-                                    ),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Colors.black.withValues(alpha: 150),
-                                    ),
-                                  ),
-                              ],
-                            );
-                          },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            KeepDataCheckbox(),
+                            ResetterButton(),
+                          ],
                         ),
                       ),
                     ],
@@ -249,33 +151,19 @@ class ResetterView extends StatelessWidget {
               ),
               Column(
                 children: [
-                  Text.rich(
-                    TextSpan(
-                      text: 'NOTE: ',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.yellow,
-                          ),
-                      children: [
-                        TextSpan(
-                          text:
-                              'This app is NOT encourages any kind of illegal usages of ${App.processName}, rather educational or experimental perpose only.',
-                          style:
-                              Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    color: Colors.black.withValues(alpha: 100),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                      ],
-                    ),
-                    style: GoogleFonts.kodeMono(),
-                  ),
-                  const SizedBox(height: 5),
                   Text(
-                    'Copyright (c) 2024 Metaspook',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Colors.black.withValues(alpha: 100),
+                    'i. This app is NOT encourages any kind of illegal use of ${App.processName}, rather educational or experimental perpose only.',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: Colors.black54,
                           fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 1.25),
+                  Text(
+                    'Copyright (c) ${DateTime.now().year} Metaspook',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Colors.grey,
+                          // fontWeight: FontWeight.bold,
                         ),
                   ),
                 ],

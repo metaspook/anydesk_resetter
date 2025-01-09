@@ -15,7 +15,10 @@ class App extends MaterialApp {
           ),
           theme: ThemeData(
             textTheme: GoogleFonts.kodeMonoTextTheme(),
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyanAccent),
             // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            // checkboxTheme: const CheckboxThemeData(
+            // fillColor: WidgetStatePropertyAll(Colors.cyanAccent)),
             useMaterial3: true,
           ),
         );
