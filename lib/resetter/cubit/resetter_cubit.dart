@@ -17,8 +17,9 @@ class ResetterCubit extends Cubit<ResetterState> {
         .monitorProcess(name: App.processName)
         .listen(_changeAnyDeskOnline);
     //-- Subscribe to monitorData stream.
-    _monitorDataSubscription =
-        _processRepo.monitorData().listen(_changeDataExists);
+    _monitorDataSubscription = _processRepo
+        .monitorData(keepData: state.keepFavoritesAndRecentSessions)
+        .listen(_changeDataExists);
   }
 
   final ProcessRepo _processRepo;
@@ -29,22 +30,24 @@ class ResetterCubit extends Cubit<ResetterState> {
   Future<void> changeKeepFavoritesAndRecentSessions() async {
     final prevStatus = state.status;
     emit(state.copyWith(status: ResetterStatus.loading));
-    await Future<void>.delayed(const Duration(seconds: 1));
     await _monitorDataSubscription?.cancel();
-    _monitorDataSubscription = _processRepo
-        .monitorData(keepData: !state.keepFavoritesAndRecentSessions)
-        .listen(_changeDataExists);
+    // await Future<void>.delayed(const Duration(seconds: 1));
     emit(
       state.copyWith(
         status: prevStatus,
         keepFavoritesAndRecentSessions: !state.keepFavoritesAndRecentSessions,
       ),
     );
+    _monitorDataSubscription = _processRepo
+        .monitorData(keepData: state.keepFavoritesAndRecentSessions)
+        .listen(_changeDataExists);
   }
 
-  Future<void> resetAnyDesk({bool keepData = true}) async {
+  Future<void> resetAnyDesk() async {
     emit(state.copyWith(status: ResetterStatus.loading, isResetting: true));
-    final success = await _processRepo.reset(keepData: keepData);
+    final success = await _processRepo.reset(
+      keepData: state.keepFavoritesAndRecentSessions,
+    );
     emit(
       success
           ? state.copyWith(status: ResetterStatus.success, isResetting: false)

@@ -78,22 +78,22 @@ class ResetterButton extends StatelessWidget {
       onPressed: isResetting || isLoading ? null : cubit().resetAnyDesk,
       label: isResetting || isLoading
           ? LinearProgressIndicator(borderRadius: BorderRadius.circular(8))
-          // : !dataExists
-          //     ? Text(
-          //         'No data found to reset!',
-          //         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          //               color: Colors.white,
-          //             ),
-          //       )
-          : const Text(
-              'Reset',
-              // until 1.6 maintains original size
-              textScaler: TextScaler.linear(1.6),
-              style: TextStyle(
-                color: Colors.yellow,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+          : !dataExists
+              ? Text(
+                  'No data found to reset!',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Colors.white,
+                      ),
+                )
+              : const Text(
+                  'Reset',
+                  // until 1.6 maintains original size
+                  textScaler: TextScaler.linear(1.6),
+                  style: TextStyle(
+                    color: Colors.yellow,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
       icon: isResetting || isLoading
           ? null
           : const Icon(

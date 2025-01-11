@@ -12,18 +12,30 @@ class ProcessRepo {
   Stream<bool> monitorProcess({
     required String name,
     Duration interval = const Duration(seconds: 1),
-  }) =>
-      Stream.periodic(interval, (_) {
+  }) async* {
+    while (true) {
+      yield await Future.delayed(interval, () async {
         try {
-          return processRunningTaskStdOut(name).contains(name);
+          return (await runningTaskStdout(name)).contains(name);
         } on Exception catch (e, s) {
           logger.severe('Error monitoring process: $name', e, s);
           return false;
         }
       });
+    }
+
+    // return Stream<bool>.periodic(interval, (_) {
+    //   try {
+    //     return runningTaskStdout(name).contains(name);
+    //   } on Exception catch (e, s) {
+    //     logger.severe('Error monitoring process: $name', e, s);
+    //     return false;
+    //   }
+    // });
+  }
 
   Stream<bool> monitorData({
-    bool keepData = true,
+    required bool keepData,
     Duration interval = const Duration(seconds: 1),
   }) =>
       Stream.periodic(interval, (_) {
@@ -35,9 +47,9 @@ class ProcessRepo {
         }
       });
 
-  String processRunningTaskStdOut(String name) {
+  Future<String> runningTaskStdout(String name) async {
     final taskRecord = existenceTaskRecord(name);
-    final result = Process.runSync(
+    final result = await Process.run(
       taskRecord.executable,
       taskRecord.arguments,
       runInShell: true,
@@ -55,12 +67,16 @@ class ProcessRepo {
     return stdout;
   }
 
-  bool killProcess() {
-    final stdOut = processRunningTaskStdOut(processName);
-    print('stdOut: $stdOut');
+  Future<bool> killProcess() async {
+    final stdOut = (await runningTaskStdout(processName)).contains(processName);
+    // i. return false if process isn't running.
+    if (!stdOut) return false;
+
+    // print('stdOut: $stdOut');
+    // print('res: ${stdOut.contains('A')}');
     // return stdOut;
     final taskRecord = terminationTaskRecord(processName);
-    final result = Process.runSync(
+    final result = await Process.run(
       taskRecord.executable,
       taskRecord.arguments,
       runInShell: true,
@@ -78,7 +94,7 @@ class ProcessRepo {
     return true;
   }
 
-  bool dataExists({bool keepData = true}) {
+  bool dataExists({required bool keepData}) {
     // path list parser
     List<String> parsePaths(List<List<String>> pathsList) => [
           for (final e in pathsList)
@@ -121,16 +137,23 @@ class ProcessRepo {
 
     // find operation
     try {
-      return paths.map((path) => Directory(path).existsSync()).contains(true);
+      return paths
+          .map(
+            (path) => (keepData ? File(path) : Directory(path)).existsSync(),
+          )
+          .contains(true);
     } on Exception catch (e) {
       logger.severe('Error finding AnyDesk data: $e');
     }
     return false;
   }
 
-  Future<bool> reset({bool keepData = true}) async {
-    await Future<void>.delayed(const Duration(seconds: 1));
-    killProcess();
+  Future<bool> reset({required bool keepData}) async {
+    // await Future<void>.delayed(const Duration(seconds: 1));
+    final res = await killProcess();
+    print('res: $res');
+    // if (!res) return false;
+
     // path list parser
     List<String> parsePaths(List<List<String>> pathsList) => [
           for (final e in pathsList)

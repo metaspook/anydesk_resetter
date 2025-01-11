@@ -123,6 +123,8 @@ class ResetterView extends StatelessWidget {
                       ),
                       Text(
                         'Dev.By, Metaspook',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               color: Colors.white,
                             ),
@@ -138,6 +140,7 @@ class ResetterView extends StatelessWidget {
                       const SizedBox(
                         width: 260,
                         child: Column(
+                          spacing: 5,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             KeepDataCheckbox(),
