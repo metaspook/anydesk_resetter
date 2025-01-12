@@ -25,5 +25,7 @@ class App extends MaterialApp {
 
   static const titleText = 'AnyDesk Resetter';
   static const processName = 'AnyDesk';
+  static const author = 'Metaspook';
+  static const version = 'v1.0.0';
   static const assetAnyDeskLogo = 'assets/anydesk_logo_1.png';
 }

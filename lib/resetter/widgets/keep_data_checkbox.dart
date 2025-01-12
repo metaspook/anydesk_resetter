@@ -9,16 +9,19 @@ class KeepDataCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<ResetterCubit>;
     final isResetting =
-        context.select((ResetterCubit cubit) => cubit.state.isResetting);
+        context.select((ResetterCubit cubit) => cubit.state.status.isResetting);
+    final isResettingOrLoading =
+        context.select((ResetterCubit cubit) => cubit.state.status.isLoading) ||
+            isResetting;
     final keepFavoritesAndRecentSessions = context.select(
       (ResetterCubit cubit) => cubit.state.keepFavoritesAndRecentSessions,
     );
     return Row(
       children: [
         Checkbox(
-          tristate: isResetting,
-          value: isResetting ? null : keepFavoritesAndRecentSessions,
-          onChanged: isResetting
+          tristate: true,
+          value: isResettingOrLoading ? null : keepFavoritesAndRecentSessions,
+          onChanged: isResettingOrLoading
               ? null
               : (_) => cubit().changeKeepFavoritesAndRecentSessions(),
         ),

@@ -23,22 +23,14 @@ class ProcessRepo {
         }
       });
     }
-
-    // return Stream<bool>.periodic(interval, (_) {
-    //   try {
-    //     return runningTaskStdout(name).contains(name);
-    //   } on Exception catch (e, s) {
-    //     logger.severe('Error monitoring process: $name', e, s);
-    //     return false;
-    //   }
-    // });
   }
 
   Stream<bool> monitorData({
     required bool keepData,
     Duration interval = const Duration(seconds: 1),
-  }) =>
-      Stream.periodic(interval, (_) {
+  }) async* {
+    while (true) {
+      yield await Future.delayed(interval, () async {
         try {
           return dataExists(keepData: keepData);
         } on Exception catch (e, s) {
@@ -46,6 +38,8 @@ class ProcessRepo {
           return false;
         }
       });
+    }
+  }
 
   Future<String> runningTaskStdout(String name) async {
     final taskRecord = existenceTaskRecord(name);
@@ -71,10 +65,6 @@ class ProcessRepo {
     final stdOut = (await runningTaskStdout(processName)).contains(processName);
     // i. return false if process isn't running.
     if (!stdOut) return false;
-
-    // print('stdOut: $stdOut');
-    // print('res: ${stdOut.contains('A')}');
-    // return stdOut;
     final taskRecord = terminationTaskRecord(processName);
     final result = await Process.run(
       taskRecord.executable,
@@ -94,7 +84,7 @@ class ProcessRepo {
     return true;
   }
 
-  bool dataExists({required bool keepData}) {
+  Future<bool> dataExists({required bool keepData}) async {
     // path list parser
     List<String> parsePaths(List<List<String>> pathsList) => [
           for (final e in pathsList)
@@ -137,11 +127,10 @@ class ProcessRepo {
 
     // find operation
     try {
-      return paths
-          .map(
-            (path) => (keepData ? File(path) : Directory(path)).existsSync(),
-          )
-          .contains(true);
+      return [
+        for (final path in paths)
+          await (keepData ? File(path) : Directory(path)).exists(),
+      ].contains(true);
     } on Exception catch (e) {
       logger.severe('Error finding AnyDesk data: $e');
     }
@@ -149,10 +138,8 @@ class ProcessRepo {
   }
 
   Future<bool> reset({required bool keepData}) async {
-    // await Future<void>.delayed(const Duration(seconds: 1));
-    final res = await killProcess();
-    print('res: $res');
-    // if (!res) return false;
+    // kill the process if running
+    await killProcess();
 
     // path list parser
     List<String> parsePaths(List<List<String>> pathsList) => [

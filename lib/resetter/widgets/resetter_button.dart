@@ -11,81 +11,28 @@ class ResetterButton extends StatelessWidget {
     final dataExists = context.select(
       (ResetterCubit cubit) => cubit.state.dataExists,
     );
-    final isLoading = context.select(
-      (ResetterCubit cubit) => cubit.state.status.isLoading,
-    );
     final isResetting = context.select(
-      (ResetterCubit cubit) => cubit.state.isResetting,
+      (ResetterCubit cubit) => cubit.state.status.isResetting,
+    );
+    final isResettingOrLoading = context.select(
+      (ResetterCubit cubit) =>
+          cubit.state.status.isLoading || cubit.state.status.isResetting,
+    );
+    final buttonStyle = ElevatedButton.styleFrom(
+      backgroundColor: Colors.black.withValues(alpha: 150),
     );
 
-    // final isReset = Random().nextBool();
-    // final resetIconRecord = isReset
-    //     ? (color: Colors.green, iconData: Icons.check_circle_outline_rounded)
-    //     : (color: Colors.red, iconData: Icons.restart_alt_rounded);
-
-//  if (isLoading)
-//                                   ElevatedButton(
-//                                     onPressed: null,
-//                                     style: ElevatedButton.styleFrom(
-//                                       backgroundColor:
-//                                           Colors.black.withValues(alpha: 150),
-//                                     ),
-//                                     child: LinearProgressIndicator(
-//                                       borderRadius: BorderRadius.circular(8),
-//                                     ),
-//                                   )
-//                                 else if (!dataExists)
-//                                   ElevatedButton(
-//                                     onPressed: null,
-//                                     style: ElevatedButton.styleFrom(
-//                                       backgroundColor:
-//                                           Colors.black.withValues(alpha: 150),
-//                                     ),
-//                                     child: Text(
-//                                       'No data found to reset!',
-//                                       style: Theme.of(context)
-//                                           .textTheme
-//                                           .labelSmall
-//                                           ?.copyWith(
-//                                             color: Colors.white,
-//                                           ),
-//                                     ),
-//                                   )
-//                                 else
-//                                   ElevatedButton.icon(
-//                                     onPressed: cubit().resetAnyDesk,
-//                                     label: const Text(
-//                                       'Reset',
-//                                       // until 1.6 maintains original size
-//                                       textScaler: TextScaler.linear(1.6),
-//                                       style: TextStyle(
-//                                         color: Colors.cyanAccent,
-//                                         fontWeight: FontWeight.bold,
-//                                       ),
-//                                     ),
-//                                     icon: Icon(
-//                                       size: 27.5,
-//                                       resetIconRecord.iconData,
-//                                       color: resetIconRecord.color,
-//                                     ),
-//                                     style: ElevatedButton.styleFrom(
-//                                       backgroundColor:
-//                                           Colors.black.withValues(alpha: 150),
-//                                     ),
-//                                   ),
-
-    return ElevatedButton.icon(
-      onPressed: isResetting || isLoading ? null : cubit().resetAnyDesk,
-      label: isResetting || isLoading
-          ? LinearProgressIndicator(borderRadius: BorderRadius.circular(8))
-          : !dataExists
-              ? Text(
-                  'No data found to reset!',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.white,
-                      ),
-                )
-              : const Text(
+    return isResettingOrLoading
+        ? ElevatedButton(
+            onPressed: null,
+            style: buttonStyle,
+            child:
+                LinearProgressIndicator(borderRadius: BorderRadius.circular(8)),
+          )
+        : !isResetting && dataExists
+            ? ElevatedButton.icon(
+                onPressed: cubit().resetAnyDesk,
+                label: const Text(
                   'Reset',
                   // until 1.6 maintains original size
                   textScaler: TextScaler.linear(1.6),
@@ -94,16 +41,80 @@ class ResetterButton extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-      icon: isResetting || isLoading
-          ? null
-          : const Icon(
-              size: 27.5,
-              Icons.restart_alt_rounded,
-              color: Colors.cyanAccent,
-            ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.black.withValues(alpha: 150),
-      ),
-    );
+                icon: const Icon(
+                  size: 27.5,
+                  Icons.restart_alt_rounded,
+                  color: Colors.cyanAccent,
+                ),
+                style: buttonStyle,
+              )
+            : ElevatedButton(
+                onPressed: null,
+                style: buttonStyle,
+                child: Text(
+                  'No data found to reset!',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Colors.white,
+                      ),
+                ),
+              );
   }
 }
+
+// class ResetterButtonText extends StatelessWidget {
+//   const ResetterButtonText({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final isNotLoadingAndDataNotExists = context.select(
+//       (ResetterCubit cubit) =>
+//           !cubit.state.dataExists && !cubit.state.status.isLoading,
+//     );
+//     final isLoading = context.select(
+//       (ResetterCubit cubit) => cubit.state.status.isLoading,
+//     );
+
+//     return isNotLoadingAndDataNotExists
+//         ? Text(
+//             'No data found to reset!',
+//             style: Theme.of(context).textTheme.labelSmall?.copyWith(
+//                   color: Colors.white,
+//                 ),
+//           )
+//         : isLoading
+//             ? const Text(
+//                 'Reset',
+//                 // until 1.6 maintains original size
+//                 textScaler: TextScaler.linear(1.6),
+//                 style: TextStyle(
+//                   color: Colors.yellow,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               )
+//             : Text(
+//                 'No data found to reset!',
+//                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
+//                       color: Colors.white,
+//                     ),
+//               );
+//   }
+// }
+
+// class ResetterButtonIcon extends StatelessWidget {
+//   const ResetterButtonIcon({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final isLoadingOrDataNotExists = context.select(
+//       (ResetterCubit cubit) =>
+//           !cubit.state.dataExists || cubit.state.status.isLoading,
+//     );
+//     return isLoadingOrDataNotExists
+//         ? const SizedBox.shrink()
+//         : const Icon(
+//             size: 27.5,
+//             Icons.restart_alt_rounded,
+//             color: Colors.cyanAccent,
+//           );
+//   }
+// }

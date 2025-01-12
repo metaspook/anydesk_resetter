@@ -28,31 +28,35 @@ class ResetterCubit extends Cubit<ResetterState> {
 
   //-- Cubit Methods
   Future<void> changeKeepFavoritesAndRecentSessions() async {
-    final prevStatus = state.status;
-    emit(state.copyWith(status: ResetterStatus.loading));
-    await _monitorDataSubscription?.cancel();
-    // await Future<void>.delayed(const Duration(seconds: 1));
+    var prevStatus = state.status;
     emit(
       state.copyWith(
-        status: prevStatus,
+        status: ResetterStatus.loading,
         keepFavoritesAndRecentSessions: !state.keepFavoritesAndRecentSessions,
       ),
     );
+    await _monitorDataSubscription?.cancel();
     _monitorDataSubscription = _processRepo
         .monitorData(keepData: state.keepFavoritesAndRecentSessions)
-        .listen(_changeDataExists);
+        .listen((dataExists) {
+      emit(state.copyWith(status: prevStatus, dataExists: dataExists));
+      prevStatus = state.status;
+    });
   }
 
   Future<void> resetAnyDesk() async {
-    emit(state.copyWith(status: ResetterStatus.loading, isResetting: true));
+    emit(state.copyWith(status: ResetterStatus.resetting));
     final success = await _processRepo.reset(
       keepData: state.keepFavoritesAndRecentSessions,
     );
-    emit(
-      success
-          ? state.copyWith(status: ResetterStatus.success, isResetting: false)
-          : state.copyWith(status: ResetterStatus.failure, isResetting: false),
-    );
+    // delay is important to prevent showing reset button before no data text.
+    await Future<void>.delayed(const Duration(milliseconds: 2500), () {
+      emit(
+        success
+            ? state.copyWith(status: ResetterStatus.success)
+            : state.copyWith(status: ResetterStatus.failure),
+      );
+    });
   }
 
   //-- Private helpers
