@@ -136,6 +136,7 @@ class ResetterView extends StatelessWidget {
                   ),
                 ],
               ),
+              const Spacer(),
               Column(
                 children: [
                   Text(

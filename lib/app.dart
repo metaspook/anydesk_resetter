@@ -3,7 +3,6 @@ import 'package:anydesk_resetter/shared/repositories/process_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:provider/provider.dart';
 
 class App extends MaterialApp {
   App({super.key})

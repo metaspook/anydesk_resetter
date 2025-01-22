@@ -26,8 +26,11 @@ class ResetterButton extends StatelessWidget {
         ? ElevatedButton(
             onPressed: null,
             style: buttonStyle,
-            child:
-                LinearProgressIndicator(borderRadius: BorderRadius.circular(8)),
+            child: LinearProgressIndicator(
+              backgroundColor: Colors.black.withValues(alpha: 150),
+              color: Colors.cyanAccent,
+              borderRadius: BorderRadius.circular(8),
+            ),
           )
         : !isResetting && dataExists
             ? ElevatedButton.icon(
