@@ -5,9 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 
 class ProcessRepo {
-  ProcessRepo(this.processName) : logger = Logger('ProcessRepo');
+  ProcessRepo(this.processName);
   final String processName;
-  final Logger logger;
+  final _logger = Logger('ProcessRepo');
 
   Stream<bool> monitorProcess({
     required String name,
@@ -18,7 +18,7 @@ class ProcessRepo {
         try {
           return (await runningTaskStdout(name)).contains(name);
         } on Exception catch (e, s) {
-          logger.severe('Error monitoring process: $name', e, s);
+          _logger.severe('Error monitoring process: $name', e, s);
           return false;
         }
       });
@@ -34,7 +34,7 @@ class ProcessRepo {
         try {
           return dataExists(keepData: keepData);
         } on Exception catch (e, s) {
-          logger.severe('Error monitoring data!', e, s);
+          _logger.severe('Error monitoring data!', e, s);
           return false;
         }
       });
@@ -132,7 +132,7 @@ class ProcessRepo {
           await (keepData ? File(path) : Directory(path)).exists(),
       ].contains(true);
     } on Exception catch (e) {
-      logger.severe('Error finding AnyDesk data: $e');
+      _logger.severe('Error finding AnyDesk data: $e');
     }
     return false;
   }
@@ -186,11 +186,11 @@ class ProcessRepo {
       try {
         if (await entity.exists()) {
           await entity.delete(recursive: true);
-          logger.severe('Deleted ${entity.runtimeType}: ${entity.path}');
+          _logger.severe('Deleted ${entity.runtimeType}: ${entity.path}');
           return true;
         }
       } on FileSystemException catch (e) {
-        logger.severe('Failed to delete ${entity.path}: ${e.message}');
+        _logger.severe('Failed to delete ${entity.path}: ${e.message}');
       }
       return false;
     }
@@ -199,7 +199,7 @@ class ProcessRepo {
     try {
       return (await Future.wait(paths.map(deletePath))).contains(true);
     } on Exception catch (e) {
-      logger.severe('Error resetting AnyDesk data: $e');
+      _logger.severe('Error resetting AnyDesk data: $e');
     }
     return false;
   }

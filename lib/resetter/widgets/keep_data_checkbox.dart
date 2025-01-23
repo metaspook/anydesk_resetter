@@ -23,7 +23,7 @@ class KeepDataCheckbox extends StatelessWidget {
             color: Colors.black.withValues(alpha: 150),
             width: 1.5,
           ),
-          checkColor: Colors.cyanAccent,
+          checkColor: Colors.yellow,
           fillColor: WidgetStateColor.resolveWith((states) {
             if (!states.contains(WidgetState.selected)) {
               return Colors.transparent;

@@ -21,6 +21,6 @@ void main() async {
     await windowManager.focus();
   });
   Logger.root.level = Level.ALL; // defaults to Level.INFO
-  Logger.root.onRecord.listen(devLog2);
+  Logger.root.onRecord.listen(devLog);
   runApp(App());
 }
