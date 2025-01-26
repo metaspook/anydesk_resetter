@@ -19,17 +19,6 @@ class KeepDataCheckbox extends StatelessWidget {
     return Row(
       children: [
         Checkbox(
-          side: BorderSide(
-            color: Colors.black.withValues(alpha: 150),
-            width: 1.5,
-          ),
-          checkColor: Colors.yellow,
-          fillColor: WidgetStateColor.resolveWith((states) {
-            if (!states.contains(WidgetState.selected)) {
-              return Colors.transparent;
-            }
-            return Colors.black.withValues(alpha: 150);
-          }),
           tristate: true,
           value: isResettingOrLoading ? null : keepFavoritesAndRecentSessions,
           onChanged: isResettingOrLoading

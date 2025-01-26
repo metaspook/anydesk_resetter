@@ -1,4 +1,5 @@
 import 'package:anydesk_resetter/resetter/resetter.dart';
+import 'package:anydesk_resetter/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,18 +19,12 @@ class ResetterButton extends StatelessWidget {
       (ResetterCubit cubit) =>
           cubit.state.status.isLoading || cubit.state.status.isResetting,
     );
-    final buttonStyle = ElevatedButton.styleFrom(
-      backgroundColor: Colors.black.withValues(alpha: 150),
-    );
 
     return isResettingOrLoading
         ? ElevatedButton(
             onPressed: null,
-            style: buttonStyle,
             child: LinearProgressIndicator(
-              backgroundColor: Colors.black.withValues(alpha: 150),
-              color: Colors.cyanAccent,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(appSpacing),
             ),
           )
         : !isResetting && dataExists
@@ -49,11 +44,9 @@ class ResetterButton extends StatelessWidget {
                   Icons.restart_alt_rounded,
                   color: Colors.cyanAccent,
                 ),
-                style: buttonStyle,
               )
             : ElevatedButton(
                 onPressed: null,
-                style: buttonStyle,
                 child: Text(
                   'No data found to reset!',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(

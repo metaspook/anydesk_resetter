@@ -13,12 +13,29 @@ class App extends MaterialApp {
             child: const ResetterPage(),
           ),
           theme: ThemeData(
-            textTheme: GoogleFonts.kodeMonoTextTheme(),
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyanAccent),
-            // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            // checkboxTheme: const CheckboxThemeData(
-            // fillColor: WidgetStatePropertyAll(Colors.cyanAccent)),
             useMaterial3: true,
+            textTheme: GoogleFonts.kodeMonoTextTheme(),
+            progressIndicatorTheme: ProgressIndicatorThemeData(
+              linearTrackColor: Colors.black.withValues(alpha: 150),
+              color: Colors.cyanAccent,
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black.withValues(alpha: 150),
+              ),
+            ),
+            checkboxTheme: CheckboxThemeData(
+              checkColor: const WidgetStatePropertyAll(Colors.yellow),
+              side: BorderSide(
+                color: Colors.black.withValues(alpha: 150),
+                width: 2,
+              ),
+              fillColor: WidgetStateColor.resolveWith(
+                (states) => states.contains(WidgetState.selected)
+                    ? Colors.black.withValues(alpha: 150)
+                    : Colors.transparent,
+              ),
+            ),
           ),
         );
 

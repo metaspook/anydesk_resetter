@@ -7,8 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 
 /// Returns platform-specific command and arguments for process lookup.
-/// * Windows: Uses tasklist with findstr.
-/// * Unix/Mac: Uses ps with grep.
+/// * Windows: Uses `tasklist` with `findstr`.
+/// * Unix/Mac: Uses `ps` with `grep`.
 /// * Throws [PlatformException] for unsupported platforms.
 TaskRecord existenceTaskRecord(String name) =>
     switch (Platform.operatingSystem) {
