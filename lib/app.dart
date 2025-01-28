@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 class App extends MaterialApp {
   App({super.key})
       : super(
+          // title: 'ds    AnyDesk Resetter',
           debugShowCheckedModeBanner: false,
           home: RepositoryProvider(
             create: (context) => ProcessRepo(App.processName),

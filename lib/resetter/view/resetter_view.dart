@@ -26,7 +26,10 @@ class ResetterView extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.5, vertical: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: appSpacing * 1.5,
+            vertical: appSpacing,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

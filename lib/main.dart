@@ -7,20 +7,21 @@ import 'package:window_manager/window_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
-  const windowOptions = WindowOptions(
-    size: Size(487.5, 212.5),
-    backgroundColor: Colors.transparent,
-    title: 'AnyDesk Resetter',
-    center: true,
-    alwaysOnTop: true,
-  );
-  await windowManager.waitUntilReadyToShow(windowOptions, () async {
+  await windowManager.waitUntilReadyToShow(
+      const WindowOptions(
+        size: Size(487.5, 212.5),
+        backgroundColor: Colors.transparent,
+        title: '.\u2007AnyDesk Resetter',
+        center: true,
+        alwaysOnTop: true,
+      ), () async {
     await windowManager.setMaximizable(false);
     await windowManager.setResizable(false);
     await windowManager.show();
     await windowManager.focus();
   });
-  Logger.root.level = Level.ALL; // defaults to Level.INFO
-  Logger.root.onRecord.listen(devLog);
+  Logger.root
+    ..level = Level.ALL
+    ..onRecord.listen(devLog);
   runApp(App());
 }

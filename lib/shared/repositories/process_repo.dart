@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:anydesk_resetter/utils/utils.dart';
 import 'package:flutter/services.dart';
@@ -8,13 +9,17 @@ class ProcessRepo {
   ProcessRepo(this.processName);
   final String processName;
   final _logger = Logger('ProcessRepo');
+  static const _minInterval = Duration(seconds: 1);
+  Duration _currentIntervalProcess = _minInterval;
+  Duration _currentIntervalData = _minInterval;
 
   Stream<bool> monitorProcess({
     required String name,
-    Duration interval = const Duration(seconds: 1),
+    int maxIntervalSeconds = 10,
   }) async* {
+    final maxInterval = Duration(seconds: maxIntervalSeconds);
     while (true) {
-      yield await Future.delayed(interval, () async {
+      final result = await Future.delayed(_currentIntervalProcess, () async {
         try {
           return (await runningTaskStdout(name)).contains(name);
         } on Exception catch (e, s) {
@@ -22,15 +27,18 @@ class ProcessRepo {
           return false;
         }
       });
+      yield result;
+      _currentIntervalProcess = _adaptInterval(maxInterval, result: result);
     }
   }
 
   Stream<bool> monitorData({
     required bool keepData,
-    Duration interval = const Duration(seconds: 1),
+    int maxIntervalSeconds = 5,
   }) async* {
+    final maxInterval = Duration(seconds: maxIntervalSeconds);
     while (true) {
-      yield await Future.delayed(interval, () async {
+      final result = await Future.delayed(_currentIntervalData, () async {
         try {
           return dataExists(keepData: keepData);
         } on Exception catch (e, s) {
@@ -38,6 +46,8 @@ class ProcessRepo {
           return false;
         }
       });
+      yield result;
+      _currentIntervalData = _adaptInterval(maxInterval, result: result);
     }
   }
 
@@ -63,7 +73,7 @@ class ProcessRepo {
 
   Future<bool> killProcess() async {
     final stdOut = (await runningTaskStdout(processName)).contains(processName);
-    // i. return false if process isn't running.
+    // i. returns false if process isn't running.
     if (!stdOut) return false;
     final taskRecord = terminationTaskRecord(processName);
     final result = await Process.run(
@@ -85,7 +95,7 @@ class ProcessRepo {
   }
 
   Future<bool> dataExists({required bool keepData}) async {
-    // path list parser
+    // i. path list parser
     List<String> parsePaths(List<List<String>> pathsList) => [
           for (final e in pathsList)
             if (keepData) ...[
@@ -94,7 +104,7 @@ class ProcessRepo {
             ] else
               e.joinAsPath(),
         ];
-    // path list preparation
+    // i. path list preparation
     final paths = switch (Platform.operatingSystem) {
       Platforms.windows => parsePaths(
           [
@@ -124,8 +134,7 @@ class ProcessRepo {
           message: '${Platform.operatingSystem} not supported',
         ),
     };
-
-    // find operation
+    // i. find operation
     try {
       return [
         for (final path in paths)
@@ -138,10 +147,9 @@ class ProcessRepo {
   }
 
   Future<bool> reset({required bool keepData}) async {
-    // kill the process if running
+    // i. kill the process if running
     await killProcess();
-
-    // path list parser
+    // i. path list parser
     List<String> parsePaths(List<List<String>> pathsList) => [
           for (final e in pathsList)
             if (keepData) ...[
@@ -150,7 +158,7 @@ class ProcessRepo {
             ] else
               e.joinAsPath(),
         ];
-    // path list preparation
+    // i. path list preparation
     final paths = switch (Platform.operatingSystem) {
       Platforms.windows => parsePaths(
           [
@@ -180,7 +188,7 @@ class ProcessRepo {
           message: '${Platform.operatingSystem} not supported',
         ),
     };
-    // path delete helper
+    // i. path delete helper
     Future<bool> deletePath(String path) async {
       final entity = keepData ? File(path) : Directory(path);
       try {
@@ -195,7 +203,7 @@ class ProcessRepo {
       return false;
     }
 
-    // reset operation
+    // i. reset operation
     try {
       return (await Future.wait(paths.map(deletePath))).contains(true);
     } on Exception catch (e) {
@@ -203,4 +211,20 @@ class ProcessRepo {
     }
     return false;
   }
+
+  //-- Private helpers
+  // i. running - adapt interval by increase to reduce CPU load
+  // i. not running - adapt interval by decrease for faster updates
+  Duration _adaptInterval(Duration maxInterval, {required bool result}) =>
+      Duration(
+        seconds: result
+            ? math.min(
+                _currentIntervalData.inSeconds * 2,
+                maxInterval.inSeconds,
+              )
+            : math.max(
+                _currentIntervalData.inSeconds ~/ 2,
+                _minInterval.inSeconds,
+              ),
+      );
 }
