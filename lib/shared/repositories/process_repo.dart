@@ -34,9 +34,9 @@ class ProcessRepo {
 
   Stream<bool> monitorData({
     required bool keepData,
-    int maxIntervalSeconds = 5,
+    int maxIntervalMilliseconds = 2500,
   }) async* {
-    final maxInterval = Duration(seconds: maxIntervalSeconds);
+    final maxInterval = Duration(milliseconds: maxIntervalMilliseconds);
     while (true) {
       final result = await Future.delayed(_currentIntervalData, () async {
         try {
