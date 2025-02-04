@@ -1,16 +1,25 @@
-# anydesk_resetter
+## 👨‍💻 AnyDesk Resetter
+Resets AnyDesk ID/Ads.<br>
 
-Resets AnyDesk ID/Ads.
+><b>Platforms:</b> Windows, Linux, macOS.<br>
+><b>SDK:</b> Flutter/Dart
 
-## Getting Started
+### 🕹️ Screenshot
+![&nbsp;Missing screenshot!](screenshot.jpg?raw=true)
 
-This project is a starting point for a Flutter application.
+### 🎈 Features
+* Resets AnyDesk ID and Ads.
+* Fixes common issues that requires reset.
+* Support portable and installation mode.
+* Realtime AnyDesk process detection.
+* Realtime AnyDesk data detection.
+* Reset AnyDesk with[out] data.
+* If reset without data, only data can be reset later.
 
-A few resources to get you started if this is your first Flutter project:
+### 🎈 Change Log:
+<details><summary>Click to collapse/fold.</summary>
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+* v1.0.0 - Initial release.
+```
+</details>
