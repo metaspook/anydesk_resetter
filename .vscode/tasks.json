@@ -323,7 +323,7 @@
 			],
 			"group": "build",
 			"problemMatcher": [],
-			"label": "flutter: flutter build windows development obfuscate",
+			"label": "flutter: flutter build windows obfuscate",
 			"detail": "metaspook tasks config"
 		},
 		// Dart/Flutter build_runner
